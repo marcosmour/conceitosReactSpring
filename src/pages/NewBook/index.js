@@ -19,8 +19,35 @@ export default function NewBook(){
 
     const username = localStorage.getItem('username');
     const accessToken=localStorage.getItem('accessToken');
-
+    
     const navigate = useNavigate();
+
+    async function loadBook(){
+        try {
+            const response = await api.get(`api/book/v1/${bookId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+                })
+
+                let adjusteDate = (response.data.launchDate.split("T", 10)[0])// criado para formatar o modelo da data
+
+                setId(response.data.id);
+                setTitle(response.data.title);
+                setAuthor(response.data.author);
+                setPrice(response.data.price);
+                setLaunchDate(adjusteDate);
+        } catch (error) {
+            alert('Error recovering Book! Try again!');
+            navigate('/books');
+        }
+    }
+    
+    useEffect(() => {
+        if (bookId === '0') return;   
+         else loadBook();
+        
+    }, [bookId])
 
     async function createNewBook(e){
         e.preventDefault();
